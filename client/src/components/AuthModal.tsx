@@ -59,6 +59,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, title = "
 
                 if (data.session) {
                     showToast('Account created successfully!', 'success');
+                    onLogin(name, phone); // Trigger parent update
                     onClose();
                 } else {
                     // This happens if email confirmation is on. 
@@ -87,12 +88,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, title = "
                     loginEmail = `${cleanPhone}@no-email.qurux.app`;
                 }
 
-                const { error } = await supabase.auth.signInWithPassword({
+                const { data: loginData, error } = await supabase.auth.signInWithPassword({
                     email: loginEmail,
                     password
                 });
                 if (error) throw error;
+
+                // Fetch user name if not provided
+                const userName = loginData.user?.user_metadata?.full_name || name || 'User';
+
                 showToast('Welcome back!', 'success');
+                onLogin(userName, phone); // Trigger parent update
                 onClose();
             }
         } catch (error: any) {
