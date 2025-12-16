@@ -13,7 +13,7 @@ interface AuthModalProps {
     defaultRole?: 'CUSTOMER' | 'MANAGER';
 }
 
-export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, title = "Join Qurux", defaultRole = 'CUSTOMER' }) => {
+export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin, title = "Join Qurux", defaultRole = 'CUSTOMER' }) => {
     const { showToast } = useToast();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
