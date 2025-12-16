@@ -494,6 +494,7 @@ export const LandingPage = () => {
                 onClose={() => setShowManagerLogin(false)}
                 onLogin={(name) => {
                     login(Role.MANAGER, name);
+                    setCurrentView('MANAGER_DASHBOARD');
                     setShowManagerLogin(false);
                     showToast('Welcome to Manager Dashboard', 'success');
                 }}
@@ -507,6 +508,7 @@ export const LandingPage = () => {
                 onClose={() => setShowRegisterModal(false)}
                 onLogin={(name, phone) => {
                     login(Role.CUSTOMER, name);
+                    setCurrentView('CUSTOMER_HOME');
                     setShowRegisterModal(false);
                     showToast(`Account created! Phone: ${phone || 'N/A'}`, 'success');
                 }}
