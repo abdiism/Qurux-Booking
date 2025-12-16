@@ -1,8 +1,7 @@
 import { supabase } from '../lib/supabase';
 
-// Dynamically determine API URL based on current hostname
-const hostname = window.location.hostname;
-export const API_URL = `http://${hostname}:4000/api`;
+// Dynamically determine API URL based on environment
+export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 
 export const handleResponse = async (response: Response) => {
     if (!response.ok) {
