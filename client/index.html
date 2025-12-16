@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f43f5e" />
+  <link rel="icon" href="/logo-v3.png" />
+  <link rel="apple-touch-icon" href="/pwa-192x192-v3.png" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <title>Qurux Salon</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            // Custom colors if needed
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --clay-shadow: inset -6px -6px 14px rgba(255, 255, 255, 0.9),
+        inset 6px 6px 14px rgba(244, 63, 94, 0.08),
+        8px 8px 20px rgba(244, 63, 94, 0.05);
+      --clay-bg: rgba(255, 255, 255, 0.85);
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: #fff1f2;
+      /* Rose-50 */
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-family: 'Quicksand', sans-serif;
+    }
+
+    .clay-card {
+      background: var(--clay-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: var(--clay-shadow);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+
+    .clay-button {
+      box-shadow: 6px 6px 12px rgba(244, 63, 94, 0.15), -6px -6px 12px rgba(255, 255, 255, 1);
+    }
+
+    .clay-button:active {
+      box-shadow: inset 4px 4px 8px rgba(244, 63, 94, 0.1), inset -4px -4px 8px rgba(255, 255, 255, 1);
+    }
+
+    /* Better selection visibility */
+    ::selection {
+      background-color: #f43f5e;
+      /* Rose-500 */
+      color: white;
+    }
+
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      /* IE and Edge */
+      scrollbar-width: none;
+      /* Firefox */
+    }
+  </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.1/",
+    "react": "https://esm.sh/react@^19.2.1",
+    "framer-motion": "https://esm.sh/framer-motion@^12.23.26",
+    "recharts": "https://esm.sh/recharts@^3.5.1",
+    "lucide-react": "https://esm.sh/lucide-react@^0.560.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.1/"
+  }
+}
+</script>
+  <link rel="stylesheet" href="/src/index.css">
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/index.tsx"></script>
+
+</body>
+
+</html>
