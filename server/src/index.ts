@@ -16,7 +16,10 @@ const port = process.env.PORT || 4000;
 
 // --- Security Middleware ---
 app.use(helmet()); // Secure Headers
-app.use(cors()); // Enable CORS
+app.use(cors({
+    origin: ['https://qurux-app.netlify.app', 'http://localhost:5173', 'http://localhost:3000'],
+    credentials: true
+})); // Configure CORS for Netlify and Localhost
 app.use(express.json()); // Parse JSON bodies
 
 // Rate Limiting (Prevent DDoS)
