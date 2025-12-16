@@ -52,6 +52,12 @@ export const sendBookingStatusEmail = async (bookingId: string, status: string) 
         const { data: salon } = await supabase.from('salons').select('name, address, city').eq('id', bookingDetails.salon_id).single();
 
         if (customerEmail) {
+            // Check for Dummy Email (Phone-based users)
+            if (customerEmail.endsWith('@no-email.qurux.app')) {
+                console.log(`[bookingEmailHandler] Skipping email for phone-only user: ${customerEmail}`);
+                return;
+            }
+
             const emailDetails = {
                 customerName: customerName,
                 serviceName: service?.name_english || 'Service',

@@ -33,34 +33,62 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, title = "
         setLoading(true);
         try {
             if (isRegister) {
-                // Sign Up
+                // Sign Up Logic
+                // If email is empty, generate a dummy one from phone
+                let registerEmail = email;
+                if (!registerEmail || registerEmail.trim() === '') {
+                    // Clean phone number: remove non-numeric chars
+                    const cleanPhone = phone.replace(/\D/g, '');
+                    registerEmail = `${cleanPhone}@no-email.qurux.app`;
+                }
+
                 const { data, error } = await supabase.auth.signUp({
-                    email,
+                    email: registerEmail,
                     password,
                     options: {
                         data: {
                             full_name: name,
                             phone_number: phone,
-                            role: defaultRole
+                            role: defaultRole,
+                            is_dummy_email: !email // Flag to know if they provided a real email
                         }
                     }
                 });
 
                 if (error) throw error;
 
-                // Check if session is established immediately (verified) or not (needs verification)
                 if (data.session) {
                     showToast('Account created successfully!', 'success');
                     onClose();
                 } else {
-                    // Start Verification Flow
-                    setIsVerifying(true);
-                    showToast('Verification code sent to your email.', 'success');
+                    // This happens if email confirmation is on. 
+                    // Since we control dummy emails, they can't verify. 
+                    // Ideally, disable email confirmation in Supabase for this to work perfectly, 
+                    // OR use the 'Auto Confirm' setting in Supabase.
+                    // For now, we assume dummy emails might get stuck if verify is required.
+                    if (registerEmail.endsWith('@no-email.qurux.app')) {
+                        showToast('Account created! Please log in.', 'success');
+                        setIsRegister(false); // Switch to login view
+                    } else {
+                        setIsVerifying(true);
+                        showToast('Verification code sent to your email.', 'success');
+                    }
                 }
             } else {
-                // Login
+                // Login Logic
+                let loginEmail = email;
+
+                // Check if user entered a phone number (digits only, or starting with +)
+                // Simple regex: contains only digits, +, -, whitespace
+                const isPhoneNumber = /^[0-9+\-\s]+$/.test(email) && !email.includes('@');
+
+                if (isPhoneNumber) {
+                    const cleanPhone = email.replace(/\D/g, '');
+                    loginEmail = `${cleanPhone}@no-email.qurux.app`;
+                }
+
                 const { error } = await supabase.auth.signInWithPassword({
-                    email,
+                    email: loginEmail,
                     password
                 });
                 if (error) throw error;
@@ -184,17 +212,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, title = "
                         )}
 
                         <div>
-                            <label className="block text-xs font-bold text-stone-500 uppercase mb-2 ml-1">Email</label>
+                            <label className="block text-xs font-bold text-stone-500 uppercase mb-2 ml-1">
+                                {isRegister ? "Email (Optional)" : "Email or Phone Number"}
+                            </label>
                             <div className="relative group">
                                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-rose-500 transition-colors" size={20} />
                                 <input
-                                    type="email"
+                                    type="text"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="e.g. sahra@example.com"
+                                    placeholder={isRegister ? "e.g. sahra@example.com" : "Email or Phone (e.g. 615XXX)"}
                                     className="w-full pl-12 pr-4 py-4 rounded-2xl bg-stone-50 border border-stone-200 focus:border-rose-500 focus:bg-white outline-none transition-all font-bold text-stone-900 placeholder:text-stone-300"
                                 />
                             </div>
+                            {isRegister && <p className="text-[10px] text-stone-400 mt-1 ml-1">We use this for booking receipts. You can leave it empty.</p>}
                         </div>
 
                         <div>
@@ -234,7 +265,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, title = "
                             </div>
                         )}
 
-                        <Button fullWidth onClick={handleSubmit} disabled={loading || !email || !password || (isRegister && (!phone || !name))} className="mt-4 clay-button">
+                        <Button fullWidth onClick={handleSubmit} disabled={loading || (isRegister ? (!password || !phone || !name) : (!email || !password))} className="mt-4 clay-button">
                             {loading ? <Loader2 className="animate-spin" /> : (isRegister ? 'Create Account' : 'Log In')}
                             {!loading && <ArrowRight size={18} />}
                         </Button>
