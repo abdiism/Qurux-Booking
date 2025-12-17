@@ -1,1 +1,14 @@
 /* Empty index.css to satisfy link in index.html */
+/* Fix for PWA/Mobile interactions */
+input, textarea, select {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  pointer-events: auto !important;
+  z-index: 50; /* Ensure it's above potential overlays */
+  position: relative;
+}
+
+/* Ensure modal inputs are clickable */
+.clay-card input {
+  opacity: 1;
+}

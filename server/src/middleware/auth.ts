@@ -23,8 +23,8 @@ export const authenticateUser = async (req: AuthRequest, res: Response, next: Ne
         const { data: { user }, error } = await supabase.auth.getUser(token);
 
         if (error || !user) {
-            console.error('Auth error:', error);
-            return res.status(401).json({ error: 'Invalid token' });
+            console.error('Auth error (Token Invalid/Expired):', error?.message);
+            return res.status(401).json({ error: 'Invalid or expired token' });
         }
 
         req.user = user;

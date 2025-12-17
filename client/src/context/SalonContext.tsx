@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { Salon, Service } from '../types';
 import { useAuth } from './AuthContext';
 import { salonService } from '../services/salonService';
+import { useToast } from './ToastContext';
 
 interface SalonContextType {
     salons: Salon[];
@@ -22,6 +23,8 @@ export const SalonProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     const [services, setServices] = useState<Service[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const { showToast } = useToast();
+
     // Fetch Data on Mount
     useEffect(() => {
         const fetchData = async () => {
@@ -35,10 +38,13 @@ export const SalonProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 setServices(servicesData || []);
             } catch (error: any) {
                 console.error('Error fetching data:', error);
-                // Graceful fallback for network errors
+
+                let msg = 'Failed to load salons.';
                 if (error.message && error.message.includes('fetch')) {
-                    console.warn('Network error: Could not reach server. Using empty data.');
+                    msg = 'Cannot connect to server. Is it running?';
                 }
+                showToast(msg, 'error');
+
                 setSalons([]);
                 setServices([]);
             } finally {

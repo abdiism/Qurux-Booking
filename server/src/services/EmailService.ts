@@ -55,27 +55,49 @@ export class EmailService {
         throw new Error(`Email template ${templateName} not found`);
     }
 
+    private escapeHtml(unsafe: string): string {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
     public async sendBookingConfirmation(toEmail: string, details: BookingDetails): Promise<void> {
         try {
             const templatePath = this.getTemplatePath('booking_confirmation.html');
             let html = fs.readFileSync(templatePath, 'utf-8');
 
+            // Sanitize inputs
+            const safeDetails = {
+                customerName: this.escapeHtml(details.customerName),
+                serviceName: this.escapeHtml(details.serviceName),
+                salonName: this.escapeHtml(details.salonName),
+                salonAddress: this.escapeHtml(details.salonAddress),
+                date: this.escapeHtml(details.date),
+                time: this.escapeHtml(details.time),
+                price: this.escapeHtml(details.price),
+                bookingLink: details.bookingLink, // Links typically need careful handling, but usually we trust our own generated links
+                rescheduleLink: details.rescheduleLink
+            };
+
             // Replace placeholders
-            html = html.replace(/{{customer_name}}/g, details.customerName)
-                .replace(/{{service_name}}/g, details.serviceName)
-                .replace(/{{salon_name}}/g, details.salonName)
-                .replace(/{{salon_address}}/g, details.salonAddress)
-                .replace(/{{booking_date}}/g, details.date)
-                .replace(/{{booking_time}}/g, details.time)
-                .replace(/{{total_price}}/g, details.price)
-                .replace(/{{booking_link}}/g, details.bookingLink)
-                .replace(/{{reschedule_link}}/g, details.rescheduleLink)
+            html = html.replace(/{{customer_name}}/g, safeDetails.customerName)
+                .replace(/{{service_name}}/g, safeDetails.serviceName)
+                .replace(/{{salon_name}}/g, safeDetails.salonName)
+                .replace(/{{salon_address}}/g, safeDetails.salonAddress)
+                .replace(/{{booking_date}}/g, safeDetails.date)
+                .replace(/{{booking_time}}/g, safeDetails.time)
+                .replace(/{{total_price}}/g, safeDetails.price)
+                .replace(/{{booking_link}}/g, safeDetails.bookingLink)
+                .replace(/{{reschedule_link}}/g, safeDetails.rescheduleLink)
                 .replace(/{{year}}/g, new Date().getFullYear().toString());
 
             const mailOptions = {
                 from: process.env.FROM_EMAIL || '"Qurux Booking" <noreply@qurux.com>',
                 to: toEmail,
-                subject: `Booking Confirmed: ${details.serviceName} at ${details.salonName}`,
+                subject: `Booking Confirmed: ${safeDetails.serviceName} at ${safeDetails.salonName}`,
                 html: html,
             };
 
@@ -92,18 +114,27 @@ export class EmailService {
             const templatePath = this.getTemplatePath('booking_rejection.html');
             let html = fs.readFileSync(templatePath, 'utf-8');
 
-            html = html.replace(/{{customer_name}}/g, details.customerName)
-                .replace(/{{service_name}}/g, details.serviceName)
-                .replace(/{{salon_name}}/g, details.salonName)
-                .replace(/{{booking_date}}/g, details.date)
-                .replace(/{{booking_time}}/g, details.time)
-                .replace(/{{booking_link}}/g, details.bookingLink)
+            const safeDetails = {
+                customerName: this.escapeHtml(details.customerName),
+                serviceName: this.escapeHtml(details.serviceName),
+                salonName: this.escapeHtml(details.salonName),
+                date: this.escapeHtml(details.date),
+                time: this.escapeHtml(details.time),
+                bookingLink: details.bookingLink
+            };
+
+            html = html.replace(/{{customer_name}}/g, safeDetails.customerName)
+                .replace(/{{service_name}}/g, safeDetails.serviceName)
+                .replace(/{{salon_name}}/g, safeDetails.salonName)
+                .replace(/{{booking_date}}/g, safeDetails.date)
+                .replace(/{{booking_time}}/g, safeDetails.time)
+                .replace(/{{booking_link}}/g, safeDetails.bookingLink)
                 .replace(/{{year}}/g, new Date().getFullYear().toString());
 
             const mailOptions = {
                 from: process.env.FROM_EMAIL || '"Qurux Booking" <noreply@qurux.com>',
                 to: toEmail,
-                subject: `Booking Update: ${details.serviceName} at ${details.salonName}`,
+                subject: `Booking Update: ${safeDetails.serviceName} at ${safeDetails.salonName}`,
                 html: html,
             };
 

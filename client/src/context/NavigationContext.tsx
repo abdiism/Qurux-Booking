@@ -28,11 +28,13 @@ export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children
         setTargetSalonId(salonId);
         setCustomerSubView('SALON_DETAILS');
         setCurrentView('CUSTOMER_HOME');
+        window.scrollTo(0, 0);
     };
 
     const navigateToAllServices = () => {
         setCustomerSubView('ALL_SERVICES');
         setCurrentView('CUSTOMER_HOME');
+        window.scrollTo(0, 0);
     };
 
     const navigateToBooking = (service: Service, salon: Salon) => {
@@ -40,6 +42,7 @@ export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children
         setTargetServiceId(service.id);
         setCustomerSubView('SALON_DETAILS');
         setCurrentView('CUSTOMER_HOME');
+        window.scrollTo(0, 0);
     };
 
     return (

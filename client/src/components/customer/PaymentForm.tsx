@@ -25,7 +25,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ paymentMethod, setPaym
                 <p className="text-stone-500 font-medium">Secure and local payment options.</p>
             </div>
 
-            <div className="space-y-4 mb-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
                 {PAYMENT_METHODS.map(method => (
                     <motion.div
                         key={method.id}

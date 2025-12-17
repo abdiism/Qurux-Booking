@@ -41,7 +41,7 @@ export const cancelBooking = async (req: AuthRequest, res: Response) => {
     if (!booking) return res.status(404).json({ error: 'Booking not found' });
 
     if (booking.customer_id !== user.id) {
-        // Validation skipped for brevity/demo
+        return res.status(403).json({ error: 'Unauthorized to cancel this booking' });
     }
 
     const { data, error } = await supabase

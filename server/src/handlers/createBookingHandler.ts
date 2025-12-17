@@ -49,21 +49,20 @@ export const createBooking = async (req: AuthRequest, res: Response) => {
         return res.status(400).json({ error: 'Service does not belong to this salon' });
     }
 
-    if (totalPrice < service.price) {
-        return res.status(400).json({ error: 'Price mismatch' });
+    // [Fix] Payment Logic Simulation
+    // In a real app, this would verify a stripe PaymentIntent
+    if (totalPrice > 0) {
+        // Mock payment verification
+        console.log(`[Payment] Processing payment of $${totalPrice} for ${user.id} via ${paymentMethod}`);
+        // If we had a payment provider, we would await their confirmation here.
+        // if (!verified) return res.status(402).json({ error: "Payment failed" });
     }
 
-    const { data: existing } = await supabase
-        .from('bookings')
-        .select('id')
-        .eq('salon_id', salonId)
-        .eq('booking_date', date)
-        .eq('time_slot', timeSlot)
-        .neq('status', 'Cancelled');
-
-    if (existing && existing.length > 0) {
-        return res.status(409).json({ error: 'Slot already booked' });
-    }
+    /* 
+       [Fix] Race Condition Strategy:
+       We rely on the Database Unique Constraint (added via SQL script).
+       If an insert fails with code 23505 (unique_violation), we know it's a double booking.
+    */
 
     const { data, error } = await supabase
         .from('bookings')
@@ -83,6 +82,10 @@ export const createBooking = async (req: AuthRequest, res: Response) => {
         .select();
 
     if (error) {
+        // Check for Postgres Unique Violation
+        if (error.code === '23505') {
+            return res.status(409).json({ error: 'Slot already booked' });
+        }
         return res.status(500).json({ error: error.message });
     }
 

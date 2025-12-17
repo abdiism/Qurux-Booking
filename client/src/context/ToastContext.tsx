@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CheckCircle, AlertCircle, Info, X } from 'lucide-react';
 import { ToastMessage, ToastType } from '../types';
@@ -12,18 +12,35 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
+  const timerIds = React.useRef<Map<string, NodeJS.Timeout>>(new Map());
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      timerIds.current.forEach((timer) => clearTimeout(timer));
+      timerIds.current.clear();
+    };
+  }, []);
+
+  const removeToast = (id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+    // Clear specific timer
+    if (timerIds.current.has(id)) {
+      clearTimeout(timerIds.current.get(id)!);
+      timerIds.current.delete(id);
+    }
+  };
+
   const showToast = (message: string, type: ToastType = 'info') => {
     const id = Math.random().toString(36).substr(2, 9);
     setToasts((prev) => [...prev, { id, message, type }]);
 
     // Auto remove after 4 seconds
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
+    const timer = setTimeout(() => {
+      removeToast(id);
     }, 4000);
-  };
 
-  const removeToast = (id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
+    timerIds.current.set(id, timer);
   };
 
   return (

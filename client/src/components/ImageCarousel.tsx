@@ -14,15 +14,20 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({
 }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
+    // Reset index if valid images change
     useEffect(() => {
-        if (images.length <= 1) return;
+        setCurrentIndex(0);
+    }, [images]);
+
+    useEffect(() => {
+        if (!images || images.length <= 1) return;
 
         const timer = setInterval(() => {
             setCurrentIndex((prev) => (prev + 1) % images.length);
         }, interval);
 
         return () => clearInterval(timer);
-    }, [images.length, interval]);
+    }, [images, interval]);
 
     if (!images || images.length === 0) return null;
 
