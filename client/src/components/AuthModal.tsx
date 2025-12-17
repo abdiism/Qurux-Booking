@@ -8,7 +8,7 @@ import { useToast } from '../context/ToastContext';
 interface AuthModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onLogin: (name: string, phone?: string) => void;
+    onLogin?: (name: string, phone?: string) => void;
     title?: string;
     defaultRole?: 'CUSTOMER' | 'MANAGER';
 }
@@ -59,7 +59,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin, 
 
                 if (data.session) {
                     showToast('Account created successfully!', 'success');
-                    onLogin(name, phone); // Trigger parent update
+                    if (onLogin) onLogin(name, phone); // Trigger parent update
                     onClose();
                 } else {
                     // This happens if email confirmation is on. 
@@ -98,7 +98,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin, 
                 const userName = loginData.user?.user_metadata?.full_name || name || 'User';
 
                 showToast('Welcome back!', 'success');
-                onLogin(userName, phone); // Trigger parent update
+                if (onLogin) onLogin(userName, phone); // Trigger parent update
                 onClose();
             }
         } catch (error: any) {
@@ -175,7 +175,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin, 
                         <div>
                             <label className="block text-xs font-bold text-stone-500 uppercase mb-2 ml-1">Verification Code</label>
                             <div className="relative group">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-rose-500 transition-colors" size={20} />
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-rose-500 transition-colors pointer-events-none" size={20} />
                                 <input
                                     type="text"
                                     value={otp}
@@ -205,7 +205,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin, 
                                     {defaultRole === 'MANAGER' ? 'Owner Name' : 'Full Name'}
                                 </label>
                                 <div className="relative group">
-                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-rose-500 transition-colors" size={20} />
+                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-rose-500 transition-colors pointer-events-none" size={20} />
                                     <input
                                         type="text"
                                         value={name}
@@ -222,7 +222,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin, 
                                 {isRegister ? "Email (Optional)" : "Email or Phone Number"}
                             </label>
                             <div className="relative group">
-                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-rose-500 transition-colors" size={20} />
+                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-rose-500 transition-colors pointer-events-none" size={20} />
                                 <input
                                     type="text"
                                     value={email}
@@ -237,7 +237,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin, 
                         <div>
                             <label className="block text-xs font-bold text-stone-500 uppercase mb-2 ml-1">Password</label>
                             <div className="relative group">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-rose-500 transition-colors" size={20} />
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-rose-500 transition-colors pointer-events-none" size={20} />
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     value={password}
@@ -259,7 +259,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin, 
                             <div>
                                 <label className="block text-xs font-bold text-stone-500 uppercase mb-2 ml-1">Phone Number <span className="text-rose-500">*</span></label>
                                 <div className="relative group">
-                                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-rose-500 transition-colors" size={20} />
+                                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-rose-500 transition-colors pointer-events-none" size={20} />
                                     <input
                                         type="tel"
                                         value={phone}
